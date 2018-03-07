@@ -1,5 +1,5 @@
 import Vapor
-import JWT
+@_exported import JWT
 
 public class Provider: Vapor.Provider {
     public static var repositoryName: String = "JWTProvider"
