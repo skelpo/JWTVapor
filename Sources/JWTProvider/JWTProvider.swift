@@ -17,9 +17,9 @@ public class Provider: Vapor.Provider {
         
         let jwtService = serviceBuilder(secret)
         if let rsaService = jwtService as? RSAService {
-            services.register(rsaService)
+            services.register(rsaService, as: JWTService.self)
         } else if let hmacService = jwtService as? HMACService {
-            services.register(hmacService)
+            services.register(hmacService, as: JWTService.self)
         } else {
             throw JWTProviderError(identifier: "unsupportedJWTService", reason: "The registered JWT service is not supported. Maybe you created a custom service?")
         }
