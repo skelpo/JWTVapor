@@ -26,4 +26,6 @@ public class Provider: Vapor.Provider {
     }
     
     public func boot(_ worker: Container) throws {}
+    
+    public func didBoot(_ worker: Container) throws -> EventLoopFuture<Void> { return Future.map(on: worker, { () }) }
 }
