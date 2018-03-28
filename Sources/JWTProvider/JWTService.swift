@@ -17,7 +17,8 @@ extension JWTService {
         guard let token = String(data: data, encoding: .utf8) else {
             throw JWTProviderError(
                 identifier: "tokenEncodingFailed",
-                reason: "Converting access token data to a string failed with UTF-8 encoding"
+                reason: "Converting access token data to a string failed with UTF-8 encoding",
+                status: .internalServerError
             )
         }
         return token
