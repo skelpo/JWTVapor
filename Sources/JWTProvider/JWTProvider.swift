@@ -4,9 +4,9 @@ import Vapor
 public class Provider: Vapor.Provider {
     public static var repositoryName: String = "JWTProvider"
     
-    public let serviceBuilder: (String) -> JWTService
+    public let serviceBuilder: (String)throws -> JWTService
     
-    public init (serviceBuilder: @escaping (String) -> JWTService) {
+    public init (serviceBuilder: @escaping (String)throws -> JWTService) {
         self.serviceBuilder = serviceBuilder
     }
     
@@ -15,7 +15,7 @@ public class Provider: Vapor.Provider {
             throw JWTProviderError(identifier: "noSecretFound", reason: "No 'JWT_SECRET' environment variable was found", status: .internalServerError)
         }
         
-        let jwtService = serviceBuilder(secret)
+        let jwtService = try serviceBuilder(secret)
         if let rsaService = jwtService as? RSAService {
             services.register(rsaService, as: JWTService.self)
         } else if let hmacService = jwtService as? HMACService {
