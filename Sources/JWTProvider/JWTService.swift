@@ -8,6 +8,7 @@ public protocol JWTService: Service {
     var header: JWTHeader { get }
     
     func sign<T: JWTPayload>(_ payload: T)throws -> String
+    func verify(_ token: Data)throws -> Bool
 }
 
 extension JWTService {
@@ -22,5 +23,18 @@ extension JWTService {
             )
         }
         return token
+    }
+    
+    public func verify(_ token: Data)throws -> Bool {
+        let parts = token.split(separator: .period)
+        guard parts.count == 3 else {
+            throw JWTError(identifier: "invalidJWT", reason: "Malformed JWT")
+        }
+        
+        let header = Data(parts[0])
+        let payload = Data(parts[1])
+        let signature = Data(parts[2])
+        
+        return try self.signer.verify(signature, header: header, payload: payload)
     }
 }
