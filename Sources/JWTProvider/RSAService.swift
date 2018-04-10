@@ -26,7 +26,7 @@ public final class RSAService: JWTService {
     public init(
         secret: String,
         header: JWTHeader,
-        keyBuilder: (LosslessDataConvertible)throws -> RSAKey = RSAKey.private,
+        keyBuilder: (LosslessDataConvertible)throws -> RSAKey,
         signerBuilder: (RSAKey) -> JWTSigner = JWTSigner.rs256
     )throws {
         let key = try keyBuilder(secret)
