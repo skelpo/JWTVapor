@@ -7,10 +7,10 @@ public final class HMACService: JWTService {
     public let header: JWTHeader
     
     public init(secret: String, header: JWTHeader = .init(), algorithm: DigestAlgorithm = .sha256)throws {
-        switch Int(algorithm.type) {
-        case Int(DigestAlgorithm.sha256.type): self.signer = JWTSigner.hs256(key: Data(secret.utf8))
-        case Int(DigestAlgorithm.sha384.type): self.signer = JWTSigner.hs384(key: Data(secret.utf8))
-        case Int(DigestAlgorithm.sha512.type): self.signer = JWTSigner.hs512(key: Data(secret.utf8))
+        switch algorithm {
+        case .sha256: self.signer = JWTSigner.hs256(key: Data(secret.utf8))
+        case .sha384: self.signer = JWTSigner.hs384(key: Data(secret.utf8))
+        case .sha512: self.signer = JWTSigner.hs512(key: Data(secret.utf8))
         default: throw JWTProviderError(identifier: "badHMACAlgorithm", reason: "HMAC signing requires SHA256, SHA384, or SHA512 algorithm", status: .internalServerError)
         }
         

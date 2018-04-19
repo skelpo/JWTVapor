@@ -13,10 +13,10 @@ public final class RSAService: JWTService {
         case .private: key = try RSAKey.private(pem: secret)
         }
         
-        switch Int(algorithm.type) {
-        case Int(DigestAlgorithm.sha256.type): self.signer = JWTSigner.rs256(key: key)
-        case Int(DigestAlgorithm.sha384.type): self.signer = JWTSigner.rs384(key: key)
-        case Int(DigestAlgorithm.sha512.type): self.signer = JWTSigner.rs512(key: key)
+        switch algorithm {
+        case .sha256: self.signer = JWTSigner.rs256(key: key)
+        case .sha384: self.signer = JWTSigner.rs384(key: key)
+        case .sha512: self.signer = JWTSigner.rs512(key: key)
         default: throw JWTProviderError(identifier: "badRSAAlgorithm", reason: "RSA signing requires SHA256, SHA384, or SHA512 algorithm", status: .internalServerError)
         }
         
