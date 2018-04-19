@@ -1,7 +1,7 @@
 import Vapor
 @_exported import JWT
 
-public class Provider: Vapor.Provider {
+public class JWTProvider: Vapor.Provider {
     public static var repositoryName: String = "JWTProvider"
     
     public let serviceBuilder: (String)throws -> JWTService
