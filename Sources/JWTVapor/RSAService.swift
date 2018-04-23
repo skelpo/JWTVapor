@@ -34,7 +34,7 @@ public final class RSAService: JWTService {
         self.header = header
     }
     
-    init(n: String, e: String, d: String? = nil, header: JWTHeader, algorithm: DigestAlgorithm = .sha256)throws {
+    public init(n: String, e: String, d: String? = nil, header: JWTHeader, algorithm: DigestAlgorithm = .sha256)throws {
         let key = try RSAKey.components(n: n, e: e, d: d)
         
         switch algorithm {
