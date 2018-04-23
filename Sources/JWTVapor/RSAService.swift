@@ -33,5 +33,18 @@ public final class RSAService: JWTService {
         self.signer = signerBuilder(key)
         self.header = header
     }
+    
+    init(n: String, e: String, d: String? = nil, header: JWTHeader, algorithm: DigestAlgorithm = .sha256)throws {
+        let key = try RSAKey.components(n: n, e: e, d: d)
+        
+        switch algorithm {
+        case .sha256: self.signer = JWTSigner.rs256(key: key)
+        case .sha384: self.signer = JWTSigner.rs384(key: key)
+        case .sha512: self.signer = JWTSigner.rs512(key: key)
+        default: throw JWTProviderError(identifier: "badRSAAlgorithm", reason: "RSA signing requires SHA256, SHA384, or SHA512 algorithm", status: .internalServerError)
+        }
+        
+        self.header = header
+    }
 }
 
