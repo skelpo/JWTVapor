@@ -5,7 +5,7 @@ import JWT
 
 public protocol JWTService: Service {
     var signer: JWTSigner { get }
-    var header: JWTHeader { get }
+    var header: JWTHeader? { get }
     
     func sign<T: JWTPayload>(_ payload: T)throws -> String
     func verify(_ token: Data)throws -> Bool
@@ -13,7 +13,10 @@ public protocol JWTService: Service {
 
 extension JWTService {
     public func sign<T>(_ payload: T) throws -> String where T : JWTPayload {
-        var jwt = JWT.init(header: self.header, payload: payload)
+        guard let header = self.header else {
+            throw JWTProviderError(identifier: "noHeader", reason: "Cannot sign token with a header", status: .internalServerError)
+        }
+        var jwt = JWT.init(header: header, payload: payload)
         let data = try signer.sign(&jwt)
         guard let token = String(data: data, encoding: .utf8) else {
             throw JWTProviderError(

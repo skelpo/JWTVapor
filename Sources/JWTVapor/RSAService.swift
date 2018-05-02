@@ -4,9 +4,9 @@ import JWT
 
 public final class RSAService: JWTService {
     public let signer: JWTSigner
-    public let header: JWTHeader
+    public let header: JWTHeader?
     
-    public init(secret: String, header: JWTHeader, type: RSAKeyType = .private, algorithm: DigestAlgorithm = .sha256)throws {
+    public init(secret: String, header: JWTHeader? = nil, type: RSAKeyType = .private, algorithm: DigestAlgorithm = .sha256)throws {
         let key: RSAKey
         switch type {
         case .public: key = try RSAKey.public(pem: secret)
@@ -25,7 +25,7 @@ public final class RSAService: JWTService {
     
     public init(
         secret: String,
-        header: JWTHeader,
+        header: JWTHeader? = nil,
         keyBuilder: (LosslessDataConvertible)throws -> RSAKey,
         signerBuilder: (RSAKey) -> JWTSigner = JWTSigner.rs256
     )throws {
@@ -34,7 +34,7 @@ public final class RSAService: JWTService {
         self.header = header
     }
     
-    public init(n: String, e: String, d: String? = nil, header: JWTHeader, algorithm: DigestAlgorithm = .sha256)throws {
+    public init(n: String, e: String, d: String? = nil, header: JWTHeader? = nil, algorithm: DigestAlgorithm = .sha256)throws {
         let key = try RSAKey.components(n: n, e: e, d: d)
         
         switch algorithm {
