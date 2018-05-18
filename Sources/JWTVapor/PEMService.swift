@@ -2,7 +2,7 @@ import Foundation
 import Crypto
 import JWT
 
-public final class PEMService: JWTService {
+public final class CertService: JWTService {
     public var signer: JWTSigner
     public var header: JWTHeader?
     
