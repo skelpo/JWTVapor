@@ -17,7 +17,7 @@ public final class HMACService: JWTService {
         self.header = header
     }
     
-    public init(secret: String, header: JWTHeader? = nil, signerBuilder: (Data) -> JWTSigner = JWTSigner.hs256) {
+    public init(secret: String, header: JWTHeader?, signerBuilder: (Data) -> JWTSigner = JWTSigner.hs256) {
         self.signer = signerBuilder(Data(secret.utf8))
         self.header = header
     }
