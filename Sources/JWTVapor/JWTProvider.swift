@@ -14,7 +14,7 @@ public class JWTProvider: Vapor.Provider {
         self.serviceBuilder = { secret in
             switch serviceType {
             case is RSAService.Type: return try RSAService(n: secret, e: "AQAB")
-            case is HMACService.Type: return try HMACService(secret: secret)
+            case is HMACService.Type: return try HMACService(key: secret)
             case is CertService.Type: return try CertService(certificate: secret)
             default:
                 throw JWTProviderError(
