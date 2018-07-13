@@ -6,11 +6,11 @@ public final class RSAService: JWTService {
     public let signer: JWTSigner
     public let header: JWTHeader?
     
-    public init(secret: String, header: JWTHeader? = nil, type: RSAKeyType = .private, algorithm: DigestAlgorithm = .sha256)throws {
+    public init(pem: String, header: JWTHeader? = nil, type: RSAKeyType = .private, algorithm: DigestAlgorithm = .sha256)throws {
         let key: RSAKey
         switch type {
-        case .public: key = try RSAKey.public(pem: secret)
-        case .private: key = try RSAKey.private(pem: secret)
+        case .public: key = try RSAKey.public(pem: pem)
+        case .private: key = try RSAKey.private(pem: pem)
         }
         
         switch algorithm {
