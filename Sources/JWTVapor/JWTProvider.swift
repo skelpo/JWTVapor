@@ -27,7 +27,7 @@ public class JWTProvider: Vapor.Provider {
     }
     
     public func register(_ services: inout Services) throws {
-        guard let secret = Environment.get("JWT_SECRET") else {
+        guard let secret = Environment.get("JWT_PUBLIC") else {
             throw JWTProviderError(identifier: "noSecretFound", reason: "No 'JWT_SECRET' environment variable was found", status: .internalServerError)
         }
         
