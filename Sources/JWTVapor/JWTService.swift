@@ -16,8 +16,8 @@ extension JWTService {
         guard let header = self.header else {
             throw JWTProviderError(identifier: "noHeader", reason: "Cannot sign token with a header", status: .internalServerError)
         }
-        var jwt = JWT.init(header: header, payload: payload)
-        let data = try signer.sign(&jwt)
+        let jwt = JWT(header: header, payload: payload)
+        let data = try signer.sign(jwt)
         guard let token = String(data: data, encoding: .utf8) else {
             throw JWTProviderError(
                 identifier: "tokenEncodingFailed",
