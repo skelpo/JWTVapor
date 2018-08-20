@@ -2,7 +2,7 @@ import Foundation
 import Vapor
 
 /// Content (Codeable) model to read the response obtained after hitting the url specified in the
-/// `jwks` property of JWKSConfig.
+/// `jwks` property of `JWKSConfig`.
 public struct JWKSDocumentRequest: Content {
     let jwksUrl: String
     
@@ -22,8 +22,7 @@ public struct JWKSDocumentRequest: Content {
 
 
 /// Create a coding key which will represent the dynamic keyname provided by the user in the
-/// `following` property of JWKSConfig.
-///
+/// `following` property of `JWKSConfig`.
 public struct JWKSDocumentCodingKey: CodingKey {
     public var stringValue: String
     

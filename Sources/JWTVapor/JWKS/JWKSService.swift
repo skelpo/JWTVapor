@@ -3,17 +3,18 @@ import Vapor
 
 public struct JWKSService: ServiceType {
     
-    /// config: JWKSConfig instance which contains all the configurations required by JWKSService.
+    /// config: `JWKSConfig` instance which contains all the configurations required by `JWKSService`.
     private let config: JWKSConfig
     /// The service container in which the Services are to be loaded.
     private let container: Container
     
-    /// Create a key that gets passed as a key in JSONDecoder's userInfo dictionary and its value is
-    /// value that the user passes in JWKSConfig's `following`. The value passed in the `following`
-    /// property is converted into a CodingKey type before passing in JSONDecoder's userInfo.
+    /// Create a key that gets passed as a key in the `JSONDecoder.userInfo` dictionary and its value is
+    /// value that the user passes in `JWKSConfig`'s `following`. The value passed in the `following`
+    /// property is converted into a `CodingKey` type before passing in `JSONDecoder`'s userInfo.
     ///
     /// The userInfo dictionary is populated as follows:
-    /// [codingUserInfoKey: JWKSDocumentCodingKey(stringValue: self.config.following)]
+    ///
+    ///     [codingUserInfoKey: JWKSDocumentCodingKey(stringValue: self.config.following)]
     static let codingUserInfoKey = CodingUserInfoKey(rawValue: "jwksUrlKey")!
     
     public init(config: JWKSConfig, container: Container) {
@@ -33,24 +34,24 @@ public struct JWKSService: ServiceType {
             /// return the JSON response.
             return try response.content.decode(json: JWKSDocumentRequest.self, using: jsonDecoder)
             
-            }.flatMap { jwksDocumentRequest throws -> Future<Response> in
-                /// Make a request and return the JWKS file.
-                return try self.container.client().get(jwksDocumentRequest.jwksUrl)
-                
-            }.flatMap { response throws -> Future<JWKSKeys> in
-                /// Read the entire list of JWKS Keys.
-                return try response.content.decode(JWKSKeys.self)
-                
-            }.map { jwksKeys throws -> JWKSKey in
-                /// Search for JWKSKey that corresponds to the provided `tid`
-                guard let matchingJWKSKey = jwksKeys.keys.filter({ $0.kid == tid }).first else {
-                    throw JWTProviderError(identifier: "InvalidjwksKeysError", reason: "No matching key found in JWKS file", status: .internalServerError)
-                }
-                return matchingJWKSKey
-                
-            }.map { jwksKey throws -> RSAService in
-                /// Create the RSAService using the JWKSKey.
-                return try RSAService(n: jwksKey.n, e: jwksKey.e)
+        }.flatMap { jwksDocumentRequest throws -> Future<Response> in
+            /// Make a request and return the JWKS file.
+            return try self.container.client().get(jwksDocumentRequest.jwksUrl)
+            
+        }.flatMap { response throws -> Future<JWKSKeys> in
+            /// Read the entire list of JWKS Keys.
+            return try response.content.decode(JWKSKeys.self)
+            
+        }.map { jwksKeys throws -> JWKSKey in
+            /// Search for JWKSKey that corresponds to the provided `tid`
+            guard let matchingJWKSKey = jwksKeys.keys.filter({ $0.kid == tid }).first else {
+                throw JWTProviderError(identifier: "InvalidjwksKeysError", reason: "No matching key found in JWKS file", status: .internalServerError)
+            }
+            return matchingJWKSKey
+            
+        }.map { jwksKey throws -> RSAService in
+            /// Create the RSAService using the JWKSKey.
+            return try RSAService(n: jwksKey.n, e: jwksKey.e)
                 
         }
     }
