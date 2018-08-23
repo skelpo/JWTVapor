@@ -51,7 +51,7 @@ public struct JWKSService: ServiceType {
             
         }.map { jwksKey throws -> RSAService in
             /// Create the RSAService using the JWKSKey.
-            return try RSAService(n: jwksKey.n, e: jwksKey.e)
+            return try RSAService(n: jwksKey.n, e: jwksKey.e, d: jwksKey.d)
                 
         }
     }
