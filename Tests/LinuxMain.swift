@@ -1,7 +1,9 @@
 import XCTest
 
-import JWTProviderTests
+import JWTVaporTests
 
 var tests = [XCTestCaseEntry]()
+tests += JWTVaporTests.allTests()
 tests += JWTProviderTests.allTests()
+tests += JWKSServiceTests.allTests()
 XCTMain(tests)

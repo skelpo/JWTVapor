@@ -1,4 +1,5 @@
 import Vapor
+import Service
 @_exported import JWT
 
 public class JWTProvider: Vapor.Provider {
@@ -28,6 +29,10 @@ public class JWTProvider: Vapor.Provider {
     }
     
     public func register(_ services: inout Services) throws {
+        
+        /// Registering a JWKSService.
+        services.register(JWKSService.self)
+        
         let d = Environment.get("JWT_SECRET")
         guard let key = Environment.get("JWT_PUBLIC") else {
             throw JWTProviderError(identifier: "noPublicFound", reason: "No 'JWT_PUBLIC' environment variable was found", status: .internalServerError)

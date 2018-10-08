@@ -4,6 +4,8 @@ import XCTest
 public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(JWTVaporTests.allTests),
+        testCase(JWTProviderTests.allTests),
+        testCase(JWKSServiceTests.allTests)
     ]
 }
 #endif
