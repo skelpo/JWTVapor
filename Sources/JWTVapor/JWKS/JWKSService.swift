@@ -7,6 +7,8 @@ public struct JWKSService: ServiceType {
     private let config: JWKSConfig
     /// The service container in which the Services are to be loaded.
     private let container: Container
+    /// The client we need to pull the jwks.
+    private let client: Client
     
     /// Create a key that gets passed as a key in the `JSONDecoder.userInfo` dictionary and its value is
     /// value that the user passes in `JWKSConfig`'s `following`. The value passed in the `following`
@@ -20,12 +22,14 @@ public struct JWKSService: ServiceType {
     public init(config: JWKSConfig, container: Container) {
         self.config = config
         self.container = container
+        self.client = try! container.make(Client.self)
+        
     }
     
     /// Finds and returns a RSAService that matches the provided `tid` from the list of JWKS.
     /// The `tid` is obtained from the JWT Header of the incoming request, if the signing mechanism used is RSA.
     public func rsaService(forKey tid: String) throws -> Future<RSAService> {
-        return try container.client().get(self.config.jwks).flatMap { response throws -> Future<JWKSDocumentRequest>  in
+        return client.get(self.config.jwks).flatMap { response throws -> Future<JWKSDocumentRequest>  in
             
             /// Create a JSONDecoder in which the codingKey could be passed as part of userInfo.
             let jsonDecoder = JSONDecoder()
@@ -36,7 +40,7 @@ public struct JWKSService: ServiceType {
             
         }.flatMap { jwksDocumentRequest throws -> Future<Response> in
             /// Make a request and return the JWKS file.
-            return try self.container.client().get(jwksDocumentRequest.jwksUrl)
+            return self.client.get(jwksDocumentRequest.jwksUrl)
             
         }.flatMap { response throws -> Future<JWKSKeys> in
             /// Read the entire list of JWKS Keys.
