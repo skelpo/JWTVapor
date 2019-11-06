@@ -3,18 +3,20 @@ import Vapor
 
 public class JWTProvider: Vapor.Provider {
     public enum Algorithm {
-        case rsa
-        case hmac
-        case cert
-        case custom((String, String?) throws -> JWTService)
+        case rsa(DigestAlgorithm = .sha256)
+        case hmac(DigestAlgorithm = .sha256)
+        case cert(DigestAlgorithm = .sha256)
+        case custom((JWTHeader?, String, String?) throws -> JWTService)
     }
 
     public let algorithm: Algorithm
+    public let header: JWTHeader?
     public let secretVar: String
     public let publicVar: String
 
-    public init(algorithm: Algorithm, secretVar: String? = nil, publicVar: String? = nil) {
+    public init(algorithm: Algorithm, header: JWTHeader?, secretVar: String? = nil, publicVar: String? = nil) {
         self.algorithm = algorithm
+        self.header = header
         self.secretVar = secretVar ?? "JWT_SECRET"
         self.publicVar = publicVar ?? "JWT_PUBLIC"
     }
@@ -29,10 +31,10 @@ public class JWTProvider: Vapor.Provider {
         }
 
         switch self.algorithm {
-        case .rsa: return try RSAService(n: publicKey, e: "AQAB", d: Environment.get(self.secretVar))
-        case .hmac: return try HMACService(key: publicKey)
-        case .cert: return try CertService(certificate: Data(publicKey.utf8))
-        case let .custom(closure): return try closure(publicKey, Environment.get(self.secretVar))
+        case let .rsa(alorithm): return try RSAService(n: publicKey, e: "AQAB", d: Environment.get(self.secretVar), header: self.header, algorithm: alorithm)
+        case let .hmac(alorithm): return try HMACService(key: publicKey, header: self.header, algorithm: alorithm)
+        case let .cert(alorithm): return try CertService(certificate: Data(publicKey.utf8), header: self.header, algorithm: alorithm)
+        case let .custom(closure): return try closure(self.header, publicKey, Environment.get(self.secretVar))
         }
     }
 
