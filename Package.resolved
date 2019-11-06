@@ -32,9 +32,9 @@
         "package": "jwt-kit",
         "repositoryURL": "https://github.com/vapor/jwt-kit.git",
         "state": {
-          "branch": null,
-          "revision": "00b67159a50304f22c59c9579c17aa627f45aae9",
-          "version": "4.0.0-alpha.1.3"
+          "branch": "master",
+          "revision": "f6793d97dd21fc05c297bab6d4c1d70fdf2c0d9f",
+          "version": null
         }
       },
       {

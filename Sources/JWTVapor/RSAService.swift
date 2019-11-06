@@ -51,13 +51,3 @@ public final class RSAService: JWTService {
         self.header = header
     }
 }
-
-extension RSAKey {
-    public convenience init?(
-        modulus: String,
-        exponent: String,
-        privateExponent: String? = nil
-    ) {
-        fatalError("Not implemented. If you get this error, bug Tanner on Discord to release the next version of JWTKit.")
-    }
-}
