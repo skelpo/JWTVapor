@@ -14,7 +14,7 @@ public class JWTProvider: Vapor.Provider {
     public let secretVar: String
     public let publicVar: String
 
-    public init(algorithm: Algorithm, header: JWTHeader?, secretVar: String? = nil, publicVar: String? = nil) {
+    public init(algorithm: Algorithm, header: JWTHeader? = nil, secretVar: String? = nil, publicVar: String? = nil) {
         self.algorithm = algorithm
         self.header = header
         self.secretVar = secretVar ?? "JWT_SECRET"
