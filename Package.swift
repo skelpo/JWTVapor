@@ -4,16 +4,19 @@ import PackageDescription
 
 let package = Package(
     name: "JWTVapor",
+    platforms: [
+        .macOS(.v10_14)
+    ],
     products: [
         .library(name: "JWTVapor", targets: ["JWTVapor"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor.git", from: "3.3.0"),
-        .package(url: "https://github.com/vapor/jwt.git", from: "3.0.0"),
-        .package(url: "https://github.com/vapor/auth.git", from: "2.0.4")
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-beta"),
+        .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0-alpha"),
+//        .package(url: "https://github.com/vapor/auth.git", .branch("master"))
     ],
     targets: [
-        .target(name: "JWTVapor", dependencies: ["Vapor", "Authentication", "JWT"]),
+        .target(name: "JWTVapor", dependencies: ["Vapor", "JWTKit"]),
         .testTarget(name: "JWTVaporTests", dependencies: ["JWTVapor"]),
     ]
 )

@@ -4,19 +4,28 @@ import Vapor
 /// Content (Codeable) model to read the response obtained after hitting the url specified in the
 /// `jwks` property of `JWKSConfig`.
 public struct JWKSDocumentRequest: Content {
-    let jwksUrl: String
-    
+    let jwksUrl: URI
+
     public init(from decoder: Decoder) throws {
-        // Get the container
         let container = try decoder.container(keyedBy: JWKSDocumentCodingKey.self)
         
         // Read the coding key passed to the decoder as part of userinfo
         guard let jwksUrlKey = decoder.userInfo[JWKSService.codingUserInfoKey] as? JWKSDocumentCodingKey else {
             throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Failed"))
         }
-        
-        // get the jwks url from the json response.
-        self.jwksUrl = try container.decode(String.self, forKey: jwksUrlKey)
+
+        self.jwksUrl = try URI(string: container.decode(String.self, forKey: jwksUrlKey))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: JWKSDocumentCodingKey.self)
+
+        // Read the coding key passed to the decoder as part of userinfo
+        guard let jwksUrlKey = encoder.userInfo[JWKSService.codingUserInfoKey] as? JWKSDocumentCodingKey else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Failed"))
+        }
+
+        try container.encode(self.jwksUrl.string, forKey: jwksUrlKey)
     }
 }
 

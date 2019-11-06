@@ -1,4 +1,3 @@
-import Foundation
 import Vapor
 
 /// Configuration required by the `JWKSService`.
@@ -13,12 +12,12 @@ import Vapor
 
 /// `JWKSConfig` is a `Service` which gets created by the required container and is made available
 /// to `JWKSService` in its `makeService` method.
-public struct JWKSConfig: Service {
-    public let jwks: String
+public struct JWKSConfig {
+    public let jwks: URI
     public let following: String
     public let password: String?
     
-    public init(jwks: String, following: String, password: String? = nil) {
+    public init(jwks: URI, following: String, password: String? = nil) {
         self.jwks = jwks
         self.following = following
         self.password = password

@@ -1,60 +1,43 @@
 import Vapor
-import Service
-@_exported import JWT
+@_exported import JWTKit
 
 public class JWTProvider: Vapor.Provider {
-    public static var repositoryName: String = "JWTProvider"
-    
-    public let serviceBuilder: (String, String?)throws -> JWTService
-    
-    public init (serviceBuilder: @escaping (String, String?)throws -> JWTService) {
-        self.serviceBuilder = serviceBuilder
+    public enum Algorithm {
+        case rsa
+        case hmac
+        case cert
+        case custom((String, String?) throws -> JWTService)
     }
-    
-    public init(_ serviceType: JWTService.Type)throws {
-        self.serviceBuilder = { key, d in
-            switch serviceType {
-            case is RSAService.Type:
-                return try RSAService(n: key, e: "AQAB", d: d)
-            case is HMACService.Type: return try HMACService(key: key)
-            case is CertService.Type: return try CertService(certificate: key)
-            default:
-                throw JWTProviderError(
-                    identifier: "unsupportedJWTService",
-                    reason: "The registered JWT service is not supported. Maybe you created a custom service?",
-                    status: .internalServerError
-                )
-            }
-        }
+
+    public let algorithm: Algorithm
+    public let secretVar: String
+    public let publicVar: String
+
+    public init(algorithm: Algorithm, secretVar: String? = nil, publicVar: String? = nil) {
+        self.algorithm = algorithm
+        self.secretVar = secretVar ?? "JWT_SECRET"
+        self.publicVar = publicVar ?? "JWT_PUBLIC"
     }
-    
-    public func register(_ services: inout Services) throws {
-        
-        /// Registering a JWKSService.
-        services.register(JWKSService.self)
-        
-        let d = Environment.get("JWT_SECRET")
-        guard let key = Environment.get("JWT_PUBLIC") else {
-            throw JWTProviderError(identifier: "noPublicFound", reason: "No 'JWT_PUBLIC' environment variable was found", status: .internalServerError)
-        }
-        
-        let jwtService = try serviceBuilder(key, d)
-        if let rsaService = jwtService as? RSAService {
-            services.register(rsaService, as: JWTService.self)
-        } else if let hmacService = jwtService as? HMACService {
-            services.register(hmacService, as: JWTService.self)
-        } else if let certService = jwtService as? CertService {
-            services.register(certService, as: JWTService.self)
-        } else {
+
+    public func service() throws -> JWTService {
+        guard let publicKey = Environment.get(self.publicVar) else {
             throw JWTProviderError(
-                identifier: "unsupportedJWTService",
-                reason: "The registered JWT service is not supported. Maybe you created a custom service?",
+                identifier: "missingPublicKey",
+                reason: "No value was found at the given public key environment variable, '\(self.publicVar)'",
                 status: .internalServerError
             )
         }
+
+        switch self.algorithm {
+        case .rsa: return try RSAService(n: publicKey, e: "AQAB", d: Environment.get(self.secretVar))
+        case .hmac: return try HMACService(key: publicKey)
+        case .cert: return try CertService(certificate: Data(publicKey.utf8))
+        case let .custom(closure): return try closure(publicKey, Environment.get(self.secretVar))
+        }
     }
-    
-    public func boot(_ worker: Container) throws {}
-    
-    public func didBoot(_ worker: Container) throws -> EventLoopFuture<Void> { return Future.map(on: worker, { () }) }
+
+    public func register(_ app: Application) {
+        app.register(JWTService.self, { _ in try self.service() })
+        app.register(request: JWTService.self, { _ in try self.service() })
+    }
 }

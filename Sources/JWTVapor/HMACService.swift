@@ -1,6 +1,5 @@
 import Foundation
-import Crypto
-import JWT
+import JWTKit
 
 public final class HMACService: JWTService {
     public let signer: JWTSigner
@@ -11,7 +10,6 @@ public final class HMACService: JWTService {
         case .sha256: self.signer = JWTSigner.hs256(key: Data(key.utf8))
         case .sha384: self.signer = JWTSigner.hs384(key: Data(key.utf8))
         case .sha512: self.signer = JWTSigner.hs512(key: Data(key.utf8))
-        default: throw JWTProviderError(identifier: "badHMACAlgorithm", reason: "HMAC signing requires SHA256, SHA384, or SHA512 algorithm", status: .internalServerError)
         }
         
         self.header = header

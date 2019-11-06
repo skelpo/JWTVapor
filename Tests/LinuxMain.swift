@@ -1,6 +1,6 @@
 import XCTest
 
-import JWTVaporTests
+import JWTKitVaporTests
 
 var tests = [XCTestCaseEntry]()
 tests += JWTVaporTests.allTests()
