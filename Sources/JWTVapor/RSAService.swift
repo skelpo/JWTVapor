@@ -10,11 +10,17 @@ public final class RSAService: JWTService {
     public let signer: JWTSigner
     public let header: JWTHeader?
 
-    public init(pem: Data, header: JWTHeader? = nil, type: KeyType = .private, algorithm: DigestAlgorithm = .sha256)throws {
+    public init(pem: Data, header: JWTHeader? = nil, type: KeyType = .private, algorithm: DigestAlgorithm = .sha256) {
         let key: RSAKey
-        switch type {
-        case .public: key = try RSAKey.public(pem: pem)
-        case .private: key = try RSAKey.private(pem: pem)
+        do {
+            switch type {
+            case .public: key = try RSAKey.public(pem: pem)
+            case .private: key = try RSAKey.private(pem: pem)
+            }
+        }
+        catch {
+            print("We need a key to run this service.")
+            exit(0)
         }
         
         switch algorithm {
@@ -37,9 +43,10 @@ public final class RSAService: JWTService {
         self.header = header
     }
     
-    public init(n: String, e: String, d: String? = nil, header: JWTHeader? = nil, algorithm: DigestAlgorithm = .sha256)throws {
+    public init(n: String, e: String, d: String? = nil, header: JWTHeader? = nil, algorithm: DigestAlgorithm = .sha256) {
         guard let key = RSAKey(modulus: n, exponent: e, privateExponent: d) else {
-            throw JWTProviderError(identifier: "keyInitFailed", reason: "RSA key initialization failed", status: .internalServerError)
+            print("RSA key initialization failed")
+            exit(0)
         }
         
         switch algorithm {
